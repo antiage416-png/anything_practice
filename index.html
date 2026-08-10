@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quant System Workflow Platform | 퀀트 아키텍처 관제 플랫폼</title>
+  
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">Q</div>
+      <div class="brand-title">
+        <h1>Quant Trading Workflow Architecture</h1>
+        <p>Enterprise Quantitative Trading & Execution Infrastructure</p>
+      </div>
+    </div>
+
+    <div class="header-status">
+      <div class="status-badge">
+        <span class="status-dot"></span>
+        <span>SYSTEM ONLINE</span>
+      </div>
+      <button id="btn-circuit-breaker" class="btn-header">🛡️ TRIGGER CIRCUIT BREAKER</button>
+    </div>
+  </header>
+
+  <!-- Navigation Bar -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="workflow">📐 시스템 워크플로우 (Workflow)</button>
+    <button class="tab-btn" data-tab="backtest">🔬 백테스트 Studio (Backtesting)</button>
+    <button class="tab-btn" data-tab="risk">🛡️ 포트폴리오 & 리스크 (Risk Engine)</button>
+    <button class="tab-btn" data-tab="oms">⚡ OMS/EMS 주문 실행 (Execution)</button>
+    <button class="tab-btn" data-tab="monitoring">📟 터미널 관제 (Monitoring)</button>
+  </nav>
+
+  <main>
+    <!-- Pane 1: Workflow Architecture -->
+    <div id="pane-workflow" class="tab-pane active">
+      <div class="grid-sidebar">
+        <!-- Interactive Pipeline Step Selection -->
+        <div class="card">
+          <div class="card-title">엔드투엔드 파이프라인 단계</div>
+          <div class="workflow-pipeline">
+            <div id="node-ingestion" class="pipeline-node" onclick="selectPipelineNode('ingestion')">
+              <div class="pipeline-header">
+                <span class="pipeline-title">1. Data Engine</span>
+                <span class="pipeline-step">STAGE 1</span>
+              </div>
+              <div class="pipeline-desc">Point-in-Time DB & WebSocket/REST 데이터 전처리</div>
+              <div class="node-tags">
+                <span class="tag">Tick/Bar</span>
+                <span class="tag">ClickHouse</span>
+                <span class="tag">PIT DB</span>
+              </div>
+            </div>
+
+            <div id="node-research" class="pipeline-node selected" onclick="selectPipelineNode('research')">
+              <div class="pipeline-header">
+                <span class="pipeline-title">2. Alpha Research</span>
+                <span class="pipeline-step">STAGE 2</span>
+              </div>
+              <div class="pipeline-desc">알파 팩터 발굴 & 백테스트 (CPCV 오버피팅 방지)</div>
+              <div class="node-tags">
+                <span class="tag">Factor Mining</span>
+                <span class="tag">Vectorized</span>
+                <span class="tag">Sharpe Optimizer</span>
+              </div>
+            </div>
+
+            <div id="node-risk" class="pipeline-node" onclick="selectPipelineNode('risk')">
+              <div class="pipeline-header">
+                <span class="pipeline-title">3. Risk & Portfolio Engine</span>
+                <span class="pipeline-step">STAGE 3</span>
+              </div>
+              <div class="pipeline-desc">Risk Parity 최적화 & VaR / MDD 서킷브레이커</div>
+              <div class="node-tags">
+                <span class="tag">HRP</span>
+                <span class="tag">VaR 95%</span>
+                <span class="tag">MDD Guard</span>
+              </div>
+            </div>
+
+            <div id="node-oms" class="pipeline-node" onclick="selectPipelineNode('oms')">
+              <div class="pipeline-header">
+                <span class="pipeline-title">4. OMS / EMS Execution</span>
+                <span class="pipeline-step">STAGE 4</span>
+              </div>
+              <div class="pipeline-desc">Target Position 분할, TWAP/VWAP & FIX 연동</div>
+              <div class="node-tags">
+                <span class="tag">TWAP</span>
+                <span class="tag">VWAP</span>
+                <span class="tag">FIX Protocol</span>
+              </div>
+            </div>
+
+            <div id="node-monitoring" class="pipeline-node" onclick="selectPipelineNode('monitoring')">
+              <div class="pipeline-header">
+                <span class="pipeline-title">5. Monitoring & Ops</span>
+                <span class="pipeline-step">STAGE 5</span>
+              </div>
+              <div class="pipeline-desc">PnL 관제, Alpha Decay 감지 & MLOps 재학습</div>
+              <div class="node-tags">
+                <span class="tag">Grafana</span>
+                <span class="tag">Decay Alert</span>
+                <span class="tag">Risk-Off Switch</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage Inspector Panel -->
+        <div class="card">
+          <div class="card-title">단계별 세부 기술 명세 (Stage Specification Inspector)</div>
+          <div id="stage-detail-card">
+            <!-- Dynamic Content populated by app.js -->
+          </div>
+
+          <div style="margin-top:24px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+            <div style="font-size:13px; font-weight:700; color:var(--text-muted); margin-bottom:10px;">전체 아키텍처 처리 성능 지표 (System Latency & Throughput)</div>
+            <div class="grid-3">
+              <div class="metric-box">
+                <div class="metric-label">Data Ingestion Rate</div>
+                <div class="metric-value" style="color:var(--accent-cyan);">15,400 msg/s</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">Avg Strategy Latency</div>
+                <div class="metric-value" style="color:var(--accent-green);">2.8 ms</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">FIX Dispatch Time</div>
+                <div class="metric-value" style="color:var(--accent-purple);">4.1 ms</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pane 2: Alpha & Backtest Studio -->
+    <div id="pane-backtest" class="tab-pane">
+      <div class="grid-sidebar">
+        <!-- Control Panel -->
+        <div class="card">
+          <div class="card-title">백테스트 설정 (Strategy Builder)</div>
+          <form id="backtest-form">
+            <div class="form-group">
+              <label>대상 자산 (Symbol)</label>
+              <select id="opt-symbol" class="form-control">
+                <option value="AAPL">AAPL (Apple Inc.)</option>
+                <option value="NVDA">NVDA (NVIDIA Corp.)</option>
+                <option value="MSFT">MSFT (Microsoft)</option>
+                <option value="BTC-USD">BTC-USD (Bitcoin)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>알파 전략 모델</label>
+              <select id="opt-strategy" class="form-control">
+                <option value="momentum">SMA Trend Momentum Crossover</option>
+                <option value="reversion">RSI Mean-Reversion Strategy</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>초기 투자금 ($)</label>
+              <input type="number" id="opt-capital" class="form-control" value="100000">
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Short Window</label>
+                <input type="number" id="opt-short" class="form-control" value="10">
+              </div>
+              <div class="form-group">
+                <label>Long Window</label>
+                <input type="number" id="opt-long" class="form-control" value="30">
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>슬리피지 (bps)</label>
+                <input type="number" id="opt-slippage" class="form-control" value="5">
+              </div>
+              <div class="form-group">
+                <label>수수료율 (%)</label>
+                <input type="number" id="opt-commission" class="form-control" value="0.1">
+              </div>
+            </div>
+
+            <button type="submit" class="btn-primary" style="margin-top:10px;">⚡ 백테스트 실행 (Run Backtest)</button>
+          </form>
+        </div>
+
+        <!-- Performance Dashboard -->
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <!-- Metrics Row -->
+          <div class="grid-4">
+            <div class="metric-box">
+              <div class="metric-label">최종 포트폴리오 가치</div>
+              <div id="res-val" class="metric-value">$107,994</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">누적 수익률 (Total Return)</div>
+              <div id="res-return" class="metric-value">+7.99%</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Sharpe Ratio (위험조정수익)</div>
+              <div id="res-sharpe" class="metric-value">1.45</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Maximum Drawdown (MDD)</div>
+              <div id="res-mdd" class="metric-value" style="color:var(--accent-amber);">8.42%</div>
+            </div>
+          </div>
+
+          <!-- Interactive Chart Card -->
+          <div class="card">
+            <div class="card-title">수익률 곡선 시각화 (Portfolio Equity Curve)</div>
+            <div class="chart-container">
+              <svg id="pnl-chart-svg" class="chart-svg"></svg>
+            </div>
+          </div>
+
+          <!-- Trades Table -->
+          <div class="card">
+            <div class="card-title">체결 내역 (Executed Trade Log)</div>
+            <div style="max-height: 200px; overflow-y: auto;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Price</th>
+                    <th>Shares</th>
+                  </tr>
+                </thead>
+                <tbody id="trades-tbody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pane 3: Risk Engine -->
+    <div id="pane-risk" class="tab-pane">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">실시간 리스크 지표 (Real-time Risk Dashboard)</div>
+          <div class="grid-2" style="margin-bottom:20px;">
+            <div class="metric-box">
+              <div class="metric-label">Current Circuit Breaker</div>
+              <div id="circuit-status" class="metric-value" style="color:var(--accent-green); font-size:18px;">NORMAL (ACTIVE)</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-label">Historical VaR (95% Confidence)</div>
+              <div class="metric-value" style="color:var(--accent-amber);">2.41%</div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+              <span>Max Allowable Drawdown (Limit: 15.0%)</span>
+              <span style="font-weight:700;">Current: 8.42%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 56.1%; background: linear-gradient(90deg, var(--accent-green), var(--accent-amber));"></div>
+            </div>
+          </div>
+
+          <div style="margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;">
+              <span>Single Asset Concentration Limit (Cap: 30.0%)</span>
+              <span style="font-weight:700;">Current: 22.5% (AAPL)</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 75.0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">포트폴리오 자산 배분 비중 (Asset Allocation Weights)</div>
+          <div style="display:flex; flex-direction:column; gap:12px; margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--font-mono);">
+              <span>AAPL (US Tech)</span>
+              <span style="color:var(--accent-cyan); font-weight:700;">35.0%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--font-mono);">
+              <span>NVDA (AI Semiconductor)</span>
+              <span style="color:var(--accent-blue); font-weight:700;">25.0%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--font-mono);">
+              <span>MSFT (Cloud/Enterprise)</span>
+              <span style="color:var(--accent-purple); font-weight:700;">20.0%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--font-mono);">
+              <span>BTC-USD (Digital Asset)</span>
+              <span style="color:var(--accent-amber); font-weight:700;">10.0%</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; font-size:13px; font-family:var(--font-mono);">
+              <span>Cash & Collateral</span>
+              <span style="color:var(--text-muted); font-weight:700;">10.0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pane 4: OMS / EMS Execution Engine -->
+    <div id="pane-oms" class="tab-pane">
+      <div class="grid-sidebar">
+        <div class="card">
+          <div class="card-title">주문 실행 시뮬레이터 (TWAP/VWAP Slicer)</div>
+          <div class="form-group">
+            <label>주문 자산 (Symbol)</label>
+            <select id="oms-symbol" class="form-control">
+              <option value="AAPL">AAPL</option>
+              <option value="NVDA">NVDA</option>
+              <option value="BTC-USD">BTC-USD</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>주문 방향 (Side)</label>
+            <select id="oms-side" class="form-control">
+              <option value="BUY">BUY (매수)</option>
+              <option value="SELL">SELL (매도)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>총 주문 수량 (Total Shares)</label>
+            <input type="number" id="oms-qty" class="form-control" value="1500">
+          </div>
+          <div class="form-group">
+            <label>TWAP 분할 수 (Order Slices)</label>
+            <input type="number" id="oms-slices" class="form-control" value="5">
+          </div>
+          <button class="btn-primary" onclick="simulateTWAPOrder()">⚡ TWAP 분할 주문 발주</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">TWAP 주문 분할 워터폴 (Order Slice Execution Stream)</div>
+          <div id="twap-order-waterfall">
+            <div style="font-size:12px; color:var(--text-muted); text-align:center; padding:30px;">
+              왼쪽 양식에서 TWAP 주문을 발주하면 분할 실행 현황이 실시간으로 표시됩니다.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pane 5: Monitoring & Terminal Logs -->
+    <div id="pane-monitoring" class="tab-pane">
+      <div class="grid-2" style="margin-bottom:20px;">
+        <div class="metric-box">
+          <div class="metric-label">AAPL Live Market Price</div>
+          <div id="live-aapl" class="metric-value" style="color:var(--accent-cyan);">$184.20</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">BTC-USD Live Market Price</div>
+          <div id="live-btc" class="metric-value" style="color:var(--accent-amber);">$67,450</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">실시간 시스템 이벤트를 위한 구조화된 텔레메트리 로그 (System Terminal Log)</div>
+        <div class="terminal-window">
+          <div id="terminal-log-body">
+            <!-- Populated dynamically by app.js -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Antigravity Quant Architecture Framework • Automated End-to-End Quantitative Trading System
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
