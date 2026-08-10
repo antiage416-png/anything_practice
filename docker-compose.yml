@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  quant-system:
+    build: .
+    container_name: quant_trading_system
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Seoul
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
